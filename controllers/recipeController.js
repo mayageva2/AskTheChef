@@ -14,6 +14,7 @@ const getRecipesByIngredients = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
  //going to page on specific recipe
 const getRecipeById = async (req, res) => {
   try {

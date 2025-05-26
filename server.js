@@ -1,6 +1,6 @@
 //loads variables from .env
 require('dotenv').config();
-console.log("🔍 Loaded MONGO_URI:", process.env.MONGO_URI);
+console.log("Loaded MONGO_URI:", process.env.MONGO_URI);
 
 // includes libraries
 const express = require('express');
@@ -12,6 +12,10 @@ const recipeRoutes = require('./routes/recipeRoutes');
 // creates the server app
 const app = express();
 
+//connects cors
+const cors = require('cors');
+app.use(cors());
+
 // connects to mongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
@@ -22,6 +26,7 @@ app.use(express.json());
 
 //connects the routers
 app.use('/api/recipes', recipeRoutes);
+
 
 // defining server port and runs the server
 const PORT = process.env.PORT || 5000;
