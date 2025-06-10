@@ -4,9 +4,16 @@ import AddRecipe from './AddRecipe';
 
 function App() {
   const [showAddPage, setShowAddPage] = useState(false); //add recipe
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false); //favorites
   const [ingredients, setIngredients] = useState(''); //user's input
   const [recipes, setRecipes] = useState([]); //recipes output
   const [error, setError] = useState(null); //error message 
+
+    //Favorite recipes feature
+  const [favorites, setFavorites] = useState(() => {
+  const stored = localStorage.getItem('favorites');
+  return stored ? JSON.parse(stored) : [];
+  });
 
   //turns input into an ingredient
   const handleInputChange = (e) => {
@@ -30,8 +37,21 @@ function App() {
     }
   };
 
+   const activateFavorite = (id) => {
+    const updated = favorites.includes(id)
+      ? favorites.filter(favId => favId !== id)
+      : [...favorites, id];
+
+    setFavorites(updated);
+    localStorage.setItem('favorites', JSON.stringify(updated));
+    };
+
    return (
     <div className="container">
+      <button onClick={() => setShowFavoritesOnly(!showFavoritesOnly)} style={{ marginRight: '10px' }}>
+        {showFavoritesOnly ? "Show All Recipes" : "Show Favorites Only"}
+      </button>
+
       <button onClick={() => setShowAddPage(!showAddPage)}>
         {showAddPage ? 'Back to Search' : 'Add Recipe'}
       </button>
@@ -56,9 +76,16 @@ function App() {
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {recipes.length === 0 && !error && <p>No recipes found.</p>}
 
-          {recipes.map(recipe => (
+          {(showFavoritesOnly 
+            ? recipes.filter(r => favorites.includes(r._id))
+            : recipes
+          ).map(recipe => (
             <div className="recipe-card" key={recipe._id}>
-              <h3>{recipe.title}</h3>
+              <h3>
+                <button onClick={() => activateFavorite(recipe._id)}>
+                {favorites.includes(recipe._id) ? "♥" : "♡"}
+                </button>
+                {recipe.title}</h3>
               {recipe.imageURL && <img src={recipe.imageURL} alt={recipe.title} width="150" />}
               <p>{recipe.instructions}</p>
             </div>
