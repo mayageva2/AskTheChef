@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';  //file containing page design
+import AddRecipe from './AddRecipe';
 
 function App() {
+  const [showAddPage, setShowAddPage] = useState(false); //add recipe
   const [ingredients, setIngredients] = useState(''); //user's input
   const [recipes, setRecipes] = useState([]); //recipes output
   const [error, setError] = useState(null); //error message 
@@ -28,36 +30,41 @@ function App() {
     }
   };
 
-  return (
+   return (
     <div className="container">
-      <h1>ASK THE CHEF</h1>
-      <p>Enter ingredients separated by commas:</p>
+      <button onClick={() => setShowAddPage(!showAddPage)}>
+        {showAddPage ? 'Back to Search' : 'Add Recipe'}
+      </button>
 
-      <input //search bar
-        type="text"
-        value={ingredients}
-        onChange={handleInputChange}
-        placeholder="egg, tomato, onion"
-      />
+      {showAddPage ? (
+        <AddRecipe />
+      ) : (
+        <>
+          <h1>ASK THE CHEF</h1>
+          <p>Enter ingredients separated by commas:</p>
 
-      //search button
-      <button onClick={handleSearch}>Search</button> 
-      <hr />
-      <h2>Results:</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {recipes.length === 0 && !error && <p>No recipes found.</p>}
+          <input
+            type="text"
+            value={ingredients}
+            onChange={handleInputChange}
+            placeholder="egg, tomato, onion"
+          />
+          <button onClick={handleSearch}>Search</button>
 
-      {recipes.map(recipe => ( //shows recipe
-        <div className="recipe-card" key={recipe._id}>
-          <h3>{recipe.title}</h3>
+          <hr />
+          <h2>Results:</h2>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {recipes.length === 0 && !error && <p>No recipes found.</p>}
 
-          {recipe.imageURL && (
-            <img src={recipe.imageURL} alt={recipe.title} width="150" />
-          )}
-
-          <p>{recipe.instructions}</p>
-        </div>
-      ))}
+          {recipes.map(recipe => (
+            <div className="recipe-card" key={recipe._id}>
+              <h3>{recipe.title}</h3>
+              {recipe.imageURL && <img src={recipe.imageURL} alt={recipe.title} width="150" />}
+              <p>{recipe.instructions}</p>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }
