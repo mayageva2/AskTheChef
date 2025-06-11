@@ -82,7 +82,9 @@ function App() {
           ).map(recipe => (
             <div className="recipe-card" key={recipe._id}>
               <h3>
-                <button onClick={() => activateFavorite(recipe._id)}>
+                <button  className="heart-button"
+                onClick={() => activateFavorite(recipe._id)}
+                >
                 {favorites.includes(recipe._id) ? "♥" : "♡"}
                 </button>
                 {recipe.title}</h3>
