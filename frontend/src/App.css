@@ -72,6 +72,12 @@ button:hover {
   background-color: #e707fc;
 }
 
+.button-group {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 12px; 
+}
+
 .recipe-card {
   background-color: #fafafa;
   padding: 1rem;

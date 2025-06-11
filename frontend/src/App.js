@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';  //file containing page design
 import AddRecipe from './AddRecipe';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import RecipeDetails from './RecipeDetails';
 
 function App() {
   const [showAddPage, setShowAddPage] = useState(false); //add recipe
@@ -37,24 +39,33 @@ function App() {
     }
   };
 
-   const activateFavorite = (id) => {
-    const updated = favorites.includes(id)
-      ? favorites.filter(favId => favId !== id)
-      : [...favorites, id];
+  //activates the heart to save to favorites
+  const activateFavorite = (id) => {
+  const updated = favorites.includes(id)
+    ? favorites.filter(favId => favId !== id)
+    : [...favorites, id];
 
-    setFavorites(updated);
-    localStorage.setItem('favorites', JSON.stringify(updated));
-    };
+  setFavorites(updated);
+  localStorage.setItem('favorites', JSON.stringify(updated));
+  };
 
    return (
-    <div className="container">
-      <button onClick={() => setShowFavoritesOnly(!showFavoritesOnly)} style={{ marginRight: '10px' }}>
-        {showFavoritesOnly ? "Show All Recipes" : "Show Favorites Only"}
-      </button>
-
-      <button onClick={() => setShowAddPage(!showAddPage)}>
-        {showAddPage ? 'Back to Search' : 'Add Recipe'}
-      </button>
+      <Router>
+      <Routes>
+        <Route path="/recipe/:id" element={<RecipeDetails />} />
+        <Route path="/" element={
+          <div className="container">
+           <div className="button-group">
+            {!showAddPage && (
+              <button onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}>
+                {showFavoritesOnly ? "Show All Recipes" : "Show Favorites Only"}
+              </button>
+            )}
+            
+            <button onClick={() => setShowAddPage(!showAddPage)}>
+              {showAddPage ? 'Back to Search' : 'Add Recipe'}
+            </button>
+          </div>
 
       {showAddPage ? (
         <AddRecipe />
@@ -80,21 +91,33 @@ function App() {
             ? recipes.filter(r => favorites.includes(r._id))
             : recipes
           ).map(recipe => (
-            <div className="recipe-card" key={recipe._id}>
-              <h3>
-                <button  className="heart-button"
-                onClick={() => activateFavorite(recipe._id)}
-                >
-                {favorites.includes(recipe._id) ? "♥" : "♡"}
-                </button>
-                {recipe.title}</h3>
-              {recipe.imageURL && <img src={recipe.imageURL} alt={recipe.title} width="150" />}
-              <p>{recipe.instructions}</p>
-            </div>
-          ))}
-        </>
-      )}
-    </div>
+                  <div className="recipe-card" key={recipe._id}>
+                    <Link to={`/recipe/${recipe._id}`}><h3>{recipe.title}</h3></Link>
+
+                    {recipe.imageURL?.trim() && (
+                      <img
+                        src={recipe.imageURL}
+                        alt={recipe.title}
+                        width="150"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    )}
+
+                    {recipe.ingredients && recipe.ingredients.length > 0 && (
+                      <p><strong>Ingredients:</strong> {recipe.ingredients.join(', ')}</p>
+                    )}
+
+                    <button className="heart-button" onClick={() => activateFavorite(recipe._id)}>
+                      {favorites.includes(recipe._id) ? "♥" : "♡"}
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        } />
+      </Routes>
+    </Router>
   );
 }
 
